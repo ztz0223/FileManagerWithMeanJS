@@ -3,7 +3,7 @@
   angular.module('FileManagerApp').provider('fileManagerConfig', function () {
     
     var values = {
-      appName: 'angular-filemanager v1.5',
+      fileManagerName: 'File Manager V0.1',
       defaultLang: 'en',
       
       listUrl: 'bridges/php/handler.php',
