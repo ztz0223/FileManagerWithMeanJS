@@ -15,7 +15,7 @@ angular.module('FileManagerApp').run(['Menus',
       roles: ['*']
     });
     
-    Menus.addSubMenuItem('topbar', 'File', {
+    Menus.addSubMenuItem('topbar', 'file', {
       title: 'List File',
       state: 'file.list'
     });
