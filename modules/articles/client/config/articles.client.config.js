@@ -23,12 +23,5 @@ angular.module('articles').run(['Menus',
       state: 'articles.create',
       roles: ['user']
     });
-
-    Menus.addMenuItem('topbar', {
-      title: 'File',
-      state: 'articles',
-      type: 'dropdown',
-      roles: ['*']
-    });
   }
 ]);
