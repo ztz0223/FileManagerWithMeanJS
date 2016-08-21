@@ -11,5 +11,13 @@
   "regex-selectors": false,
   "unique-headings": false,
   "universal-selector": false,
-  "unqualified-attributes": false
+  "unqualified-attributes": false,
+  //For Rock.Zhou custom for file manager's css
+  "ids": false,
+  "zero-units": false,
+  "outline-none": false,
+  "fallback-colors": false,
+  "vendor-prefix": false,
+  "compatible-vendor-prefixes": false,
+  "duplicate-properties" : false
 }
