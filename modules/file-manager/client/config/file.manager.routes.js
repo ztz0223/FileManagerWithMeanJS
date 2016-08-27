@@ -16,7 +16,10 @@ angular.module('FileManagerApp').config(['$stateProvider',
       })
       .state('file.list', {
         url: '',
-        templateUrl: 'modules/file-manager/client/templates/main.html'
+        templateUrl: 'modules/file-manager/client/templates/main.html',
+        data: {
+          roles: ['user', 'admin']
+        }
       });
     // .state('articles.create', {
     //     url: '/create',
