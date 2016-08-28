@@ -24,7 +24,7 @@
                 if ($scope.singleSelection()) {
                     $scope.temp = $scope.singleSelection();
                 } else {
-                    $scope.temp = new Item({rights: 644});
+                    $scope.temp = new Item({ rights: 644 });
                     $scope.temp.multiple = true;
                 }
                 $scope.temp.revert();
@@ -284,10 +284,7 @@
             };
 
             $scope.remove = function () {
-                console.log("remove 1");
-                return;
                 $scope.apiMiddleware.remove($scope.temps).then(function () {
-                    console.log("remove 2");
                     $scope.fileNavigator.refresh();
                     $scope.modal('remove', true);
                 });
@@ -306,9 +303,6 @@
             };
 
             $scope.rename = function () {
-                console.log("rename 1");
-                return;
-
                 var item = $scope.singleSelection();
                 var name = item.tempModel.name;
                 var samePath = item.tempModel.path.join('') === item.model.path.join('');

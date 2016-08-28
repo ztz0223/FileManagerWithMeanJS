@@ -3,10 +3,9 @@
  */
 'use strict';
 
-var path = require('path'),
-    mongoose = require('mongoose'),
-    Article = mongoose.model('Article');
-
+var path = require('path');
+var mongoose = require('mongoose');
+var fileMgr = mongoose.model('File');
 
 exports.list = function (req, res) {
     console.log('file list');
