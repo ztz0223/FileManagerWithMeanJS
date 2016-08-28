@@ -96,7 +96,7 @@ exports.list = function (req, res) {
                 rights: '-rw-r--r--',
                 type: 'file',
                 name: 'Registration Step 2.PNG',
-                date: '2016-08-2511:13:04'
+                date: '2016-08-25 11:13:04'
             },
             {
                 time: '12:12',
@@ -122,7 +122,7 @@ exports.list = function (req, res) {
                 rights: '-rw-r--r--',
                 type: 'file',
                 name: 'nb-configuration.xml',
-                date: '2016-08-2511:13:04'
+                date: '2016-08-25 11:13:04'
             },
             {
                 time: '11:46',
