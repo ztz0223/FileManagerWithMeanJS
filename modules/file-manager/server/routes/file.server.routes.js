@@ -41,7 +41,7 @@ module.exports = function (app) {
   
   app.route('/api/file/createFolder')
     .get(file.list)
-    .post(file.list);
+    .post(file.createFolder);
   app.route('/api/file/download')
     .get(file.list)
     .post(file.list);

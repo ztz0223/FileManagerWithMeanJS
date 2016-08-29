@@ -6,18 +6,43 @@
 var path = require('path');
 var mongoose = require('mongoose');
 var fileMgr = mongoose.model('File');
+var dateFormat = require('dateformat');
+var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
+
+var createFile = function (date) {
+
+    var dayStr = dateFormat(date, 'dd');
+    var timeStr = dateFormat(date, 'HH:MM');
+    var monStr = dateFormat(date, 'mmm');
+    var dateStr = dateFormat(date, 'yyyy-mm-dd HH:MM:ss');
+
+    return {
+        time: timeStr,
+        day: dayStr,
+        month: monStr,
+        size: '0',
+        group: '',
+        user: '',
+        number: '0',
+        rights: 'drwxr-xr-x',
+        type: 'dir',
+        name: '',
+        date: dateStr
+    };
+};
 
 exports.list = function (req, res) {
     console.log('file list');
 
     // Get post data info, and the data is from data of client request
     var action = req.body.action;
-    var path = req.body.path;
+    var pathBase = req.body.path;
+    var username = req.body.user;
 
     console.log('action is: ' + action);
     console.log('path is: ' + path);
 
-    var articles = {
+    var filesSent = {
         result: [
             {
                 time: '12:11',
@@ -33,32 +58,6 @@ exports.list = function (req, res) {
                 date: '2016-08-25 11:13:04'
             },
             {
-                time: '10:44',
-                day: '25',
-                month: 'Aug',
-                size: '0',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '2',
-                rights: 'drwxr-xr-x',
-                type: 'dir',
-                name: 'kkkk',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '10:42',
-                day: '25',
-                month: 'Aug',
-                size: '0',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '2',
-                rights: 'drwxr-xr-x',
-                type: 'dir',
-                name: 'trest',
-                date: '2016-08-25 11:13:04'
-            },
-            {
                 time: '11:54',
                 day: '25',
                 month: 'Aug',
@@ -70,76 +69,26 @@ exports.list = function (req, res) {
                 type: 'file',
                 name: '24A.png',
                 date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '10:38',
-                day: '25',
-                month: 'Aug',
-                size: '25643',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: 'Registration Step 1.PNG',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '10:37',
-                day: '25',
-                month: 'Aug',
-                size: '24720',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: 'Registration Step 2.PNG',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '12:12',
-                day: '25',
-                month: 'Aug',
-                size: '0',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: 'abc2.zip',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '11:46',
-                day: '25',
-                month: 'Aug',
-                size: '1115',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: 'nb-configuration.xml',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '11:46',
-                day: '25',
-                month: 'Aug',
-                size: '2360',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: 'pom.xml',
-                date: '2016-08-25 11:13:04'
             }
         ]
     };
 
-    res.json(articles);
+    fileMgr.find({ user: username, path: pathBase }, function (err, files) {
+        files.forEach(function (file) {
+            var newFile = createFile(file.date);
+
+            newFile.size = file.size;
+            newFile.user = file.user;
+            newFile.rights = file.rights;
+            newFile.type = file.type;
+            newFile.name = file.name;
+
+            filesSent.result.push(newFile);
+        });
+
+        // the db find is an async opr, so get all, and then send response to client.
+        res.json(filesSent);
+    });
 
     // Article.find().sort('-created').populate('user', 'displayName').exec(function (err, articles) {
     //   if (err) {
@@ -150,4 +99,33 @@ exports.list = function (req, res) {
     //     res.json(articles);
     //   }
     // });
+};
+
+exports.createFolder = function (req, res) {
+    var file = new fileMgr();
+
+    var fullPath = req.body.newPath;
+
+    console.log(fullPath + ' is the fullpath!');
+
+    file.path = path.dirname(fullPath);
+    file.group = '';
+    file.size = 0;
+    file.user = req.body.user;
+    file.number = 0;
+    file.rights = 'drwxr-xr-x';
+    file.type = 'dir';
+    file.name = path.basename(fullPath);
+    file.date = Date.now();
+
+    file.save(function (err) {
+        if(err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        else {
+            res.json(file);
+        }
+    });
 };

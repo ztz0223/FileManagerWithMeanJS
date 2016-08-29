@@ -13,7 +13,7 @@ var FileSchema = new Schema({
         type: String,
         default: '',
         trim: true,
-        required: 'Title cannot be blank'
+        required: 'Path cannot be blank'
     },
     size: {
         type: Number,
@@ -21,15 +21,13 @@ var FileSchema = new Schema({
     },
     group: {
         type: String,
-        default: '',
-        trim: true,
-        required: 'Title cannot be blank'
+        default: ''
     },
     user: {
         type: String,
         default: '',
         trim: true,
-        required: 'Title cannot be blank'
+        required: 'User cannot be blank'
     },
     number: {
         type: Number,
@@ -39,18 +37,18 @@ var FileSchema = new Schema({
         type: String,
         default: '',
         trim: true,
-        required: 'Title cannot be blank'
+        required: 'Rights cannot be blank'
     },
     type: {
         type: String,
         default: 'file',
         trim: true,
-        required: 'Title cannot be blank'
+        required: 'Type cannot be blank'
     },
     name: {
         type: String,
         trim: true,
-        required: 'Title cannot be blank'
+        required: 'Name cannot be blank'
     },
     date: {
         type: Date,

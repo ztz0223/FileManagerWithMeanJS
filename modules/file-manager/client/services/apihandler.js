@@ -9,6 +9,7 @@
                 this.inprocess = false;
                 this.asyncSuccess = false;
                 this.error = '';
+                this.authentication = Authentication;
             };
 
             ApiHandler.prototype.deferredHandler = function (data, deferred, code, defaultMsg) {
@@ -38,12 +39,10 @@
                 var dfHandler = customDeferredHandler || self.deferredHandler;
                 var deferred = $q.defer();
                 var data = {
-                    user: Authentication.user.username,
+                    user: self.authentication.user.username,
                     action: 'list',
                     path: path
                 };
-
-                console.log('Current user is: ' + Authentication.user.username);
 
                 self.inprocess = true;
                 self.error = '';
@@ -353,6 +352,7 @@
                 var self = this;
                 var deferred = $q.defer();
                 var data = {
+                    user: self.authentication.user.username,
                     action: 'createFolder',
                     newPath: path
                 };
