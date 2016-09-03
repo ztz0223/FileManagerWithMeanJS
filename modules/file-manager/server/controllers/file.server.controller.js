@@ -75,7 +75,7 @@ exports.list = function (req, res) {
 
     fileMgr.find({ user: username, path: pathBase }, function (err, files) {
 
-        if(err !== null) {
+        if(err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
 
