@@ -74,17 +74,20 @@ exports.list = function (req, res) {
     };
 
     fileMgr.find({ user: username, path: pathBase }, function (err, files) {
-        files.forEach(function (file) {
-            var newFile = createFile(file.date);
 
-            newFile.size = file.size;
-            newFile.user = file.user;
-            newFile.rights = file.rights;
-            newFile.type = file.type;
-            newFile.name = file.name;
+        if(err !== null) {
+            files.forEach(function (file) {
+                var newFile = createFile(file.date);
 
-            filesSent.result.push(newFile);
-        });
+                newFile.size = file.size;
+                newFile.user = file.user;
+                newFile.rights = file.rights;
+                newFile.type = file.type;
+                newFile.name = file.name;
+
+                filesSent.result.push(newFile);
+            });
+        }
 
         // the db find is an async opr, so get all, and then send response to client.
         res.json(filesSent);
@@ -128,4 +131,12 @@ exports.createFolder = function (req, res) {
             res.json(file);
         }
     });
+};
+
+exports.getUpload = function (req, res) {
+    console.log('get upload');
+};
+
+exports.upload = function (req, res) {
+    console.log('file upload');
 };

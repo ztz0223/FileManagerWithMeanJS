@@ -14,8 +14,8 @@ module.exports = function (app) {
     .post(file.list);
   
   app.route('/api/file/upload')
-    .get(file.list)
-    .post(file.list);
+    .get(file.getUpload)
+    .post(file.upload);
   
   app.route('/api/file/rename')
     .get(file.list)
