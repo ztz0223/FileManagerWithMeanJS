@@ -18,6 +18,7 @@ var config = require('../config'),
   flash = require('connect-flash'),
   consolidate = require('consolidate'),
   path = require('path');
+    //multer = require('multer');
 
 /**
  * Initialize local variables
@@ -88,6 +89,10 @@ module.exports.initMiddleware = function (app) {
   // Add the cookie parser and flash middleware
   app.use(cookieParser());
   app.use(flash());
+
+  // If set multer here, all of the http request will be affected, so add the midware in the specified post request
+  // Please refer to the file.server.routes.js
+  //app.use(multer({ dest: './uploads/' }).any());
 
   // Enable the CORS -- Cross-Origin Resource Sharing
   app.use(function(req, res, next) {
