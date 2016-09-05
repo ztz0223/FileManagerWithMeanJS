@@ -10,6 +10,8 @@ var dateFormat = require('dateformat');
 var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
+var saveFilePath = './uploads/';
+
 var createFile = function (date) {
 
     var dayStr = dateFormat(date, 'dd');
@@ -161,7 +163,7 @@ exports.upload = function (req, res) {
         return res.json({ status: 'OK' });
     }
 
-    var savePath = path.join(req.files[0].destination, user, fullPath);
+    var savePath = path.join(saveFilePath, user, fullPath);
 
     if (!fs.existsSync(savePath)) {
         fs.mkdirSync(savePath);
@@ -204,4 +206,28 @@ exports.upload = function (req, res) {
     });
 
     res.json({ status: 'OK' });
+};
+
+exports.download = function (req, res) {
+    console.log('file download');
+
+    var username = req.query.user;
+    var fullPath = req.query.fullPath;
+
+    var pathBase = path.dirname(fullPath);
+    var filename = path.basename(fullPath);
+
+    fileMgr.find({ user: username, path: pathBase, name: filename }, function (err) {
+        if(err) {
+            return res.status(400).send({
+                result: {
+                    error: errorHandler.getErrorMessage(err)
+                }
+            });
+        }
+        else {
+            var rootPath = path.join(saveFilePath, username, fullPath);
+            res.download(rootPath);
+        }
+    });
 };
