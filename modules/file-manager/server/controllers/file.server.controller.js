@@ -162,6 +162,34 @@ exports.upload = function (req, res) {
             if(err) {
                 console.log(err);
             }
+            else {
+                var file = new fileMgr();
+
+                var fullPath = req.body.newPath;
+
+                console.log(fullPath + ' is the fullpath!');
+
+                file.path = path.dirname(fullPath);
+                file.group = '';
+                file.size = 0;
+                file.user = req.body.user;
+                file.number = 0;
+                file.rights = 'drwxr-xr-x';
+                file.type = 'dir';
+                file.name = path.basename(fullPath);
+                file.date = Date.now();
+
+                file.save(function (err) {
+                    if(err) {
+                        return res.status(400).send({
+                            message: errorHandler.getErrorMessage(err)
+                        });
+                    }
+                    else {
+                        res.json(file);
+                    }
+                });
+            }
         });
     });
 
