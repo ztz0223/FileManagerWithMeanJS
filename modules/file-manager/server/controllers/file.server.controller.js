@@ -45,37 +45,36 @@ exports.list = function (req, res) {
 
     var filesSent = {
         result: [
-            {
-                time: '12:11',
-                day: '25',
-                month: 'Aug',
-                size: '0',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '2',
-                rights: 'drwxr-xr-x',
-                type: 'dir',
-                name: 'abc',
-                date: '2016-08-25 11:13:04'
-            },
-            {
-                time: '11:54',
-                day: '25',
-                month: 'Aug',
-                size: '2012543',
-                group: '1331',
-                user: 'jonas@guillermopercoco.com.ar',
-                number: '1',
-                rights: '-rw-r--r--',
-                type: 'file',
-                name: '24A.png',
-                date: '2016-08-25 11:13:04'
-            }
+            // {
+            //     time: '12:11',
+            //     day: '25',
+            //     month: 'Aug',
+            //     size: '0',
+            //     group: '1331',
+            //     user: 'jonas@guillermopercoco.com.ar',
+            //     number: '2',
+            //     rights: 'drwxr-xr-x',
+            //     type: 'dir',
+            //     name: 'abc',
+            //     date: '2016-08-25 11:13:04'
+            // },
+            // {
+            //     time: '11:54',
+            //     day: '25',
+            //     month: 'Aug',
+            //     size: '2012543',
+            //     group: '1331',
+            //     user: 'jonas@guillermopercoco.com.ar',
+            //     number: '1',
+            //     rights: '-rw-r--r--',
+            //     type: 'file',
+            //     name: '24A.png',
+            //     date: '2016-08-25 11:13:04'
+            // }
         ]
     };
 
     fileMgr.find({ user: username, path: pathBase }, function (err, files) {
-
         if(err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
@@ -134,10 +133,6 @@ exports.createFolder = function (req, res) {
     });
 };
 
-exports.getUpload = function (req, res) {
-    console.log('get upload');
-};
-
 exports.upload = function (req, res) {
     console.log('file upload');
 
@@ -157,36 +152,51 @@ exports.upload = function (req, res) {
      path: 'uploads\\32c62820307b8d83cc59779b9d30aeeb',
      size: 808 },
     * */
+
+    var user = req.body.user || 'None';
+    var fullPath = req.body.destination;
+    console.log(fullPath + ' is the fullpath!');
+
+    if(req.files.length < 1) {
+        return res.json({ status: 'OK' });
+    }
+
+    var savePath = path.join(req.files[0].destination, user, fullPath);
+
+    if (!fs.existsSync(savePath)) {
+        fs.mkdirSync(savePath);
+    }
+
     req.files.forEach(function (file) {
-        fs.rename(file.destination + file.filename, file.destination + file.originalname, function (err) {
+        console.log('Original file: ' + file.destination + file.filename);
+        console.log('Dest file: ' + path.join(savePath, file.originalname));
+        fs.rename(file.destination + file.filename, path.join(savePath, file.originalname), function (err) {
             if(err) {
                 console.log(err);
             }
             else {
-                var file = new fileMgr();
+                var newfile = new fileMgr();
+                newfile.path = path.dirname(fullPath);
+                newfile.group = '';
+                newfile.size = file.size;
+                newfile.user = user;
+                newfile.number = 0;
+                newfile.rights = '-rwxr-xr-x';
+                newfile.type = 'file';
+                newfile.name = file.originalname;
+                newfile.date = Date.now();
 
-                var fullPath = req.body.newPath;
-
-                console.log(fullPath + ' is the fullpath!');
-
-                file.path = path.dirname(fullPath);
-                file.group = '';
-                file.size = 0;
-                file.user = req.body.user;
-                file.number = 0;
-                file.rights = 'drwxr-xr-x';
-                file.type = 'dir';
-                file.name = path.basename(fullPath);
-                file.date = Date.now();
-
-                file.save(function (err) {
+                newfile.save(function (err) {
                     if(err) {
-                        return res.status(400).send({
-                            message: errorHandler.getErrorMessage(err)
+                        console.log('Mongo save err:' + err);
+                        res.status(400).send({
+                            result: {
+                                error: errorHandler.getErrorMessage(err)
+                            }
                         });
                     }
                     else {
-                        res.json(file);
+                        console.log('File with user: ' + user + ', name: ' + file.name + ' saved!');
                     }
                 });
             }
