@@ -7,6 +7,7 @@ var path = require('path');
 var mongoose = require('mongoose');
 var fileMgr = mongoose.model('File');
 var dateFormat = require('dateformat');
+var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
 var createFile = function (date) {
@@ -139,4 +140,30 @@ exports.getUpload = function (req, res) {
 
 exports.upload = function (req, res) {
     console.log('file upload');
+
+    console.log(req.file); // Will be null
+    console.log(req.files); // All of the file list will be here, after the multer midware translation
+    console.log(req.body);  // Will be the client's data sent
+
+    /*
+    *
+    * Files section info:
+     * { fieldname: 'file-0',
+     originalname: 'aa.csv',
+     encoding: '7bit',
+     mimetype: 'application/vnd.ms-excel',
+     destination: './uploads/',
+     filename: '32c62820307b8d83cc59779b9d30aeeb',
+     path: 'uploads\\32c62820307b8d83cc59779b9d30aeeb',
+     size: 808 },
+    * */
+    req.files.forEach(function (file) {
+        fs.rename(file.destination + file.filename, file.destination + file.originalname, function (err) {
+            if(err) {
+                console.log(err);
+            }
+        });
+    });
+
+    res.json({ status: 'OK' });
 };
