@@ -34,6 +34,21 @@ var createFile = function (date) {
     };
 };
 
+var createBucket = function (date) {
+
+    var dateStr = dateFormat(date, 'yyyy-mm-dd HH:MM:ss');
+
+    return {
+        id: "NULL",
+        user: '',  //Owner
+        number: '0',
+        rights: 'drwxr-xr-x',
+        type: 'dir',
+        name: '',  //bucket key
+        date: dateStr //date
+    };
+};
+
 exports.list = function (req, res) {
     console.log('file list');
 
@@ -94,16 +109,6 @@ exports.list = function (req, res) {
         // the db find is an async opr, so get all, and then send response to client.
         res.json(filesSent);
     });
-
-    // Article.find().sort('-created').populate('user', 'displayName').exec(function (err, articles) {
-    //   if (err) {
-    //     return res.status(400).send({
-    //       //message: errorHandler.getErrorMessage(err)
-    //     });
-    //   } else {
-    //     res.json(articles);
-    //   }
-    // });
 };
 
 exports.createFolder = function (req, res) {
@@ -229,5 +234,77 @@ exports.download = function (req, res) {
             var rootPath = path.join(saveFilePath, username, fullPath);
             res.download(rootPath);
         }
+    });
+};
+
+exports.bucketGet = function (req, res) {
+    console.log('Package list');
+
+    // Get post data info, and the data is from data of client request
+    var pathBase = '/';
+    var username = req.body.user;
+    var typeSch = 'pkg';
+
+    console.log('path is: ' + path);
+
+    var filesSent = {
+        items: []
+    };
+
+    fileMgr.find({ path: pathBase , type: typeSch }, function (err, files) {
+        if(err === null) {
+            files.forEach(function (file) {
+                var newFile = createFile(file.date);
+
+                newFile.size = file.size;
+                newFile.user = file.user;
+                newFile.rights = file.rights;
+                newFile.type = "Package";
+                newFile.name = file.name;
+
+                filesSent.items.push(newFile);
+            });
+        }
+
+        // the db find is an async opr, so get all, and then send response to client.
+        res.json(filesSent);
+    });
+};
+
+exports.bucketPost = function (req, res) {
+    console.log('Package create');
+
+    var file = new fileMgr();
+    var fullPath = '/';
+    console.log(fullPath + ' is the fullpath!');
+
+    file.path = path.dirname(fullPath);
+    file.group = '';
+    file.size = 0;
+    file.user = req.body.owner || 'None';
+    file.number = 0;
+    file.rights = 'drwxr-xr-x';
+    file.type = 'pkg';
+    file.name = req.body.bucketKey;
+    file.date = Date.now();
+
+    fileMgr.find({ path: file.path, type: file.type, name: file.name }, function (err, files) {
+        if(err === null && files.length !== 0) {
+            return res.status(400).send({
+                err: 'The package ' + file.name + " already exists!"
+            });
+        }
+
+        // No duplicate
+        file.save(function (err) {
+            if(err) {
+                return res.status(400).send({
+                    err: errorHandler.getErrorMessage(err)
+                });
+            }
+            else {
+                res.json(file);
+            }
+        });
     });
 };

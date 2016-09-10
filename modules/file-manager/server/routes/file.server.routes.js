@@ -58,4 +58,9 @@ module.exports = function (app) {
   app.route('/api/file/permission')
     .get(file.list)
     .post(file.list);
+
+  app.route('/api/file/bucket')
+      .get(file.bucketGet)
+      .post(file.bucketPost);
+
 };
