@@ -9,6 +9,7 @@ var fileMgr = mongoose.model('File');
 var dateFormat = require('dateformat');
 var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
+var uuid = require('node-uuid');
 
 var saveFilePath = './uploads/';
 
@@ -91,8 +92,8 @@ exports.list = function (req, res) {
         ]
     };
 
-    fileMgr.find({ user: username, path: pathBase }, function (err, files) {
-        if(err === null) {
+    fileMgr.find({user: username, path: pathBase}, function (err, files) {
+        if (err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
 
@@ -129,7 +130,7 @@ exports.createFolder = function (req, res) {
     file.date = Date.now();
 
     file.save(function (err) {
-        if(err) {
+        if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -148,8 +149,8 @@ exports.upload = function (req, res) {
     console.log(req.body);  // Will be the client's data sent
 
     /*
-    *
-    * Files section info:
+     *
+     * Files section info:
      * { fieldname: 'file-0',
      originalname: 'aa.csv',
      encoding: '7bit',
@@ -158,13 +159,13 @@ exports.upload = function (req, res) {
      filename: '32c62820307b8d83cc59779b9d30aeeb',
      path: 'uploads\\32c62820307b8d83cc59779b9d30aeeb',
      size: 808 },
-    * */
+     * */
 
     var user = req.body.user || 'None';
     var fullPath = req.body.destination;
     console.log(fullPath + ' is the fullpath!');
 
-    if(req.files.length !== 1) {
+    if (req.files.length !== 1) {
         res.status(400).send({
             result: {
                 error: 'No file specified!'
@@ -185,7 +186,7 @@ exports.upload = function (req, res) {
         console.log('Dest file: ' + path.join(savePath, file.originalname));
 
         fs.rename(file.destination + file.filename, path.join(savePath, file.originalname), function (err) {
-            if(err) {
+            if (err) {
                 console.log(err);
                 errRtn = err;
             }
@@ -202,7 +203,7 @@ exports.upload = function (req, res) {
                 newfile.date = Date.now();
 
                 newfile.save(function (err) {
-                    if(err) {
+                    if (err) {
                         console.log('Mongo save err:' + err);
                         errRtn = err;
                     }
@@ -217,7 +218,7 @@ exports.upload = function (req, res) {
     };
 
     var errRtn = handleFile(req.files[0]);
-    if(errRtn) {
+    if (errRtn) {
         res.status(400).send({
             result: {
                 error: errRtn
@@ -225,7 +226,7 @@ exports.upload = function (req, res) {
         });
     }
     else {
-        res.json({ status: 'OK' });
+        res.json({status: 'OK'});
     }
 };
 
@@ -238,8 +239,8 @@ exports.download = function (req, res) {
     var pathBase = path.dirname(fullPath);
     var filename = path.basename(fullPath);
 
-    fileMgr.find({ user: username, path: pathBase, name: filename }, function (err) {
-        if(err) {
+    fileMgr.find({user: username, path: pathBase, name: filename}, function (err) {
+        if (err) {
             return res.status(400).send({
                 result: {
                     error: errorHandler.getErrorMessage(err)
@@ -267,8 +268,8 @@ exports.projectGet = function (req, res) {
         items: []
     };
 
-    fileMgr.find({ path: pathBase , type: typeSch }, function (err, files) {
-        if(err === null) {
+    fileMgr.find({path: pathBase, type: typeSch}, function (err, files) {
+        if (err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
 
@@ -306,8 +307,8 @@ exports.projectPost = function (req, res) {
     file.id = req.body.id;
     file.date = Date.now();
 
-    fileMgr.find({ path: file.path, type: file.type, name: file.name }, function (err, files) {
-        if(err === null && files.length !== 0) {
+    fileMgr.find({path: file.path, type: file.type, name: file.name}, function (err, files) {
+        if (err === null && files.length !== 0) {
             return res.status(400).send({
                 err: 'The package ' + file.name + " already exists!"
             });
@@ -315,7 +316,7 @@ exports.projectPost = function (req, res) {
 
         // No duplicate
         file.save(function (err) {
-            if(err) {
+            if (err) {
                 return res.status(400).send({
                     err: errorHandler.getErrorMessage(err)
                 });
@@ -325,4 +326,55 @@ exports.projectPost = function (req, res) {
             }
         });
     });
+};
+
+exports.projectFolderGet = function (req, res) {
+    console.log('Package folder get');
+};
+
+exports.projectFolderCreate = function (req, res) {
+    console.log('Package folder create');
+
+    var projectId = req.params.projectId;
+    var parentFolderId = req.params.parentId;
+    var folderName = req.params.folderName;
+    var folderId = uuid.v4();
+
+    var file = new fileMgr();
+    var fullPath = '/';
+    console.log(fullPath + ' is the fullpath!');
+
+    file.path = path.dirname(fullPath);
+    file.group = '';
+    file.size = 0;
+    file.user = req.body.owner || 'None';
+    file.number = 0;
+    file.rights = 'drwxr-xr-x';
+    file.type = 'dir';
+    file.name = folderName;
+    file.id = folderId;
+    file.projectId = projectId;
+    file.folderId = parentFolderId;
+    file.date = Date.now();
+
+    fileMgr.find({projectId: file.projectId, folderId: file.folderId, id: file.id}, function (err, files) {
+        if (err === null && files.length !== 0) {
+            return res.status(400).send({
+                err: 'The folder under project already exists!'
+            });
+        }
+
+        // No duplicate
+        file.save(function (err) {
+            if (err) {
+                return res.status(400).send({
+                    err: errorHandler.getErrorMessage(err)
+                });
+            }
+            else {
+                res.json({folderId: file.id});
+            }
+        });
+    });
+
 };

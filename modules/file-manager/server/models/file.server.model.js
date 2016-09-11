@@ -15,10 +15,23 @@ var FileSchema = new Schema({
         trim: true,
         required: 'Path cannot be blank'
     },
+    // File id
     id: {
         type: String,
         trim: true,
         required: 'Id cannot be blank'
+    },
+    // File's project id
+    projectId: {
+        type: String,
+        trim: true,
+        default: 'project'
+    },
+    // File's parent folder id
+    folderId: {
+        type: String,
+        trim: true,
+        default: 'folder'
     },
     size: {
         type: Number,
