@@ -59,7 +59,7 @@ module.exports = function (app) {
     .get(file.list)
     .post(file.list);
 
-  app.route('/api/file/project')
+  app.route('/api/file/projects')
       .get(file.projectGet)
       .post(file.projectPost);
 
