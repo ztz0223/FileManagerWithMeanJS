@@ -237,7 +237,7 @@ exports.download = function (req, res) {
     });
 };
 
-exports.bucketGet = function (req, res) {
+exports.projectGet = function (req, res) {
     console.log('Package list');
 
     // Get post data info, and the data is from data of client request
@@ -261,6 +261,7 @@ exports.bucketGet = function (req, res) {
                 newFile.rights = file.rights;
                 newFile.type = "Package";
                 newFile.name = file.name;
+                newFile.id = file.id;
 
                 filesSent.items.push(newFile);
             });
@@ -271,7 +272,7 @@ exports.bucketGet = function (req, res) {
     });
 };
 
-exports.bucketPost = function (req, res) {
+exports.projectPost = function (req, res) {
     console.log('Package create');
 
     var file = new fileMgr();
@@ -286,6 +287,7 @@ exports.bucketPost = function (req, res) {
     file.rights = 'drwxr-xr-x';
     file.type = 'pkg';
     file.name = req.body.bucketKey;
+    file.id = req.body.id;
     file.date = Date.now();
 
     fileMgr.find({ path: file.path, type: file.type, name: file.name }, function (err, files) {

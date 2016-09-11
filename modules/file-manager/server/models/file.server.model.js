@@ -15,6 +15,11 @@ var FileSchema = new Schema({
         trim: true,
         required: 'Path cannot be blank'
     },
+    id: {
+        type: String,
+        trim: true,
+        required: 'Id cannot be blank'
+    },
     size: {
         type: Number,
         default: 0
