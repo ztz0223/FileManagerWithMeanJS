@@ -164,8 +164,12 @@ exports.upload = function (req, res) {
     var fullPath = req.body.destination;
     console.log(fullPath + ' is the fullpath!');
 
-    if(req.files.length < 1) {
-        return res.json({ status: 'OK' });
+    if(req.files.length !== 1) {
+        res.status(400).send({
+            result: {
+                error: 'No file specified!'
+            }
+        });
     }
 
     var savePath = path.join(saveFilePath, user, fullPath);
@@ -174,12 +178,16 @@ exports.upload = function (req, res) {
         fs.mkdirSync(savePath);
     }
 
-    req.files.forEach(function (file) {
+    var handleFile = function (file) {
+        var errRtn;
+
         console.log('Original file: ' + file.destination + file.filename);
         console.log('Dest file: ' + path.join(savePath, file.originalname));
+
         fs.rename(file.destination + file.filename, path.join(savePath, file.originalname), function (err) {
             if(err) {
                 console.log(err);
+                errRtn = err;
             }
             else {
                 var newfile = new fileMgr();
@@ -196,11 +204,7 @@ exports.upload = function (req, res) {
                 newfile.save(function (err) {
                     if(err) {
                         console.log('Mongo save err:' + err);
-                        res.status(400).send({
-                            result: {
-                                error: errorHandler.getErrorMessage(err)
-                            }
-                        });
+                        errRtn = err;
                     }
                     else {
                         console.log('File with user: ' + user + ', name: ' + file.name + ' saved!');
@@ -208,9 +212,21 @@ exports.upload = function (req, res) {
                 });
             }
         });
-    });
 
-    res.json({ status: 'OK' });
+        return errRtn;
+    };
+
+    var errRtn = handleFile(req.files[0]);
+    if(errRtn) {
+        res.status(400).send({
+            result: {
+                error: errRtn
+            }
+        });
+    }
+    else {
+        res.json({ status: 'OK' });
+    }
 };
 
 exports.download = function (req, res) {
