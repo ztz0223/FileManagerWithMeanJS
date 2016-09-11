@@ -330,6 +330,35 @@ exports.projectPost = function (req, res) {
 
 exports.projectFolderGet = function (req, res) {
     console.log('Package folder get');
+
+    var projectId = req.params.projectId;
+    var parentFolderId = req.params.folderId;
+
+    var filesSent = {
+        entryList: []
+    };
+
+    fileMgr.find({projectId: projectId, folderId: parentFolderId}, function (err, files) {
+        if (err === null) {
+            files.forEach(function (file) {
+                var newFile = createFile(file.date);
+
+                newFile.size = file.size;
+                newFile.user = file.user;
+                newFile.rights = file.rights;
+                newFile.type = file.type;
+                newFile.name = file.name;
+                newFile.id = file.id;
+                newFile.projectId = file.projectId;
+                newFile.entryId = file.folderId;
+
+                filesSent.entryList.push(newFile);
+            });
+        }
+
+        // the db find is an async opr, so get all, and then send response to client.
+        res.json(filesSent);
+    });
 };
 
 exports.projectFolderCreate = function (req, res) {
