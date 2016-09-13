@@ -64,7 +64,7 @@ module.exports = function (app) {
         .post(file.projectPost);
 
     app.route('/api/file/projects/:projectId')
-        .post(file.projectFolderCreate);
+        .delete (file.projectDelete);
 
     app.route('/api/file/projects/:projectId/parent/:parentId/folder/:folderName')
         .post(file.projectFolderCreate);

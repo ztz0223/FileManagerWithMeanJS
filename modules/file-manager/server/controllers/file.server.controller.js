@@ -328,6 +328,22 @@ exports.projectPost = function (req, res) {
     });
 };
 
+exports.projectDelete = function (req, res) {
+    console.log('Package delete');
+
+    var file = new fileMgr();
+    var delProjectId = req.params.projectId;
+
+    fileMgr.remove({ '$or': { projectId: delProjectId, id: delProjectId }}, function (err) {
+        if (err) {
+            res.json({ err: 'The package ' + delProjectId + " delete failed!" });
+        }
+        else {
+            res.json({ projectId: delProjectId });
+        }
+    });
+};
+
 exports.projectFolderGet = function (req, res) {
     console.log('Package folder get');
 
