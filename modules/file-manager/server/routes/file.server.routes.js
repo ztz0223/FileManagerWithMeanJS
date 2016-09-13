@@ -8,7 +8,7 @@
  */
 var file = require('../controllers/file.server.controller');
 var multer1 = require('multer');
-var upload = multer1({dest: 'uploads/'});
+var upload = multer1({ dest: 'uploads/' });
 
 module.exports = function (app) {
     app.route('/api/file/list')

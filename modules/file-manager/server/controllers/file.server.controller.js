@@ -40,7 +40,7 @@ var createBucket = function (date) {
     var dateStr = dateFormat(date, 'yyyy-mm-dd HH:MM:ss');
 
     return {
-        id: "NULL",
+        id: 'NULL',
         user: '',  //Owner
         number: '0',
         rights: 'drwxr-xr-x',
@@ -92,7 +92,7 @@ exports.list = function (req, res) {
         ]
     };
 
-    fileMgr.find({user: username, path: pathBase}, function (err, files) {
+    fileMgr.find({ user: username, path: pathBase }, function (err, files) {
         if (err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
@@ -226,7 +226,7 @@ exports.upload = function (req, res) {
         });
     }
     else {
-        res.json({status: 'OK'});
+        res.json({ status: 'OK' });
     }
 };
 
@@ -239,7 +239,7 @@ exports.download = function (req, res) {
     var pathBase = path.dirname(fullPath);
     var filename = path.basename(fullPath);
 
-    fileMgr.find({user: username, path: pathBase, name: filename}, function (err) {
+    fileMgr.find({ user: username, path: pathBase, name: filename }, function (err) {
         if (err) {
             return res.status(400).send({
                 result: {
@@ -268,7 +268,7 @@ exports.projectGet = function (req, res) {
         items: []
     };
 
-    fileMgr.find({path: pathBase, type: typeSch}, function (err, files) {
+    fileMgr.find({ path: pathBase, type: typeSch }, function (err, files) {
         if (err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
@@ -276,7 +276,7 @@ exports.projectGet = function (req, res) {
                 newFile.size = file.size;
                 newFile.user = file.user;
                 newFile.rights = file.rights;
-                newFile.type = "Package";
+                newFile.type = 'Package';
                 newFile.name = file.name;
                 newFile.id = file.id;
 
@@ -307,7 +307,7 @@ exports.projectPost = function (req, res) {
     file.id = req.body.id;
     file.date = Date.now();
 
-    fileMgr.find({path: file.path, type: file.type, name: file.name}, function (err, files) {
+    fileMgr.find({ path: file.path, type: file.type, name: file.name }, function (err, files) {
         if (err === null && files.length !== 0) {
             return res.status(400).send({
                 err: 'The package ' + file.name + " already exists!"
@@ -338,7 +338,7 @@ exports.projectFolderGet = function (req, res) {
         entryList: []
     };
 
-    fileMgr.find({projectId: projectId, folderId: parentFolderId}, function (err, files) {
+    fileMgr.find({ projectId: projectId, folderId: parentFolderId }, function (err, files) {
         if (err === null) {
             files.forEach(function (file) {
                 var newFile = createFile(file.date);
@@ -386,7 +386,7 @@ exports.projectFolderCreate = function (req, res) {
     file.folderId = parentFolderId;
     file.date = Date.now();
 
-    fileMgr.find({projectId: file.projectId, folderId: file.folderId, id: file.id}, function (err, files) {
+    fileMgr.find({ projectId: file.projectId, folderId: file.folderId, id: file.id }, function (err, files) {
         if (err === null && files.length !== 0) {
             return res.status(400).send({
                 err: 'The folder under project already exists!'
@@ -401,7 +401,7 @@ exports.projectFolderCreate = function (req, res) {
                 });
             }
             else {
-                res.json({folderId: file.id});
+                res.json({ folderId: file.id });
             }
         });
     });
