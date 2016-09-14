@@ -352,8 +352,6 @@ exports.projectDelete = function (req, res) {
             }
         });
     });
-
-
 };
 
 exports.projectFolderGet = function (req, res) {
@@ -433,5 +431,32 @@ exports.projectFolderCreate = function (req, res) {
             }
         });
     });
+};
 
+exports.projectFolderDelete = function (req, res) {
+    console.log('Package folder delete');
+
+    var file = new fileMgr();
+    var delProjectId = req.params.projectId;
+    var delFolderId = req.params.folderId;
+
+    // To delete the files/folders under the folder, but just direct children, not delete the files under child folder
+    var idList = [delProjectId];
+
+    fileMgr.find({ projectId: delProjectId}, function (err, files) {
+        if (err === null) {
+            files.forEach(function (file) {
+                idList.push(file.id);
+            });
+        }
+
+        fileMgr.remove({ 'id': { '$in': idList } }, function (err) {
+            if (err) {
+                res.json({ err: 'The package ' + delProjectId + ' delete failed!' });
+            }
+            else {
+                res.json({ projectId: delProjectId });
+            }
+        });
+    });
 };

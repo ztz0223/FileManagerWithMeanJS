@@ -70,6 +70,6 @@ module.exports = function (app) {
         .post(file.projectFolderCreate);
 
     app.route('/api/file/projects/:projectId/folder/:folderId')
-        .get(file.projectFolderGet);
-
+        .get(file.projectFolderGet)
+        .delete(file.projectFolderDelete);
 };
