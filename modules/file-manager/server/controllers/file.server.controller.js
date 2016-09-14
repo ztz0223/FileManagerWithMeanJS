@@ -310,7 +310,7 @@ exports.projectPost = function (req, res) {
     fileMgr.find({ path: file.path, type: file.type, name: file.name }, function (err, files) {
         if (err === null && files.length !== 0) {
             return res.status(400).send({
-                err: 'The package ' + file.name + " already exists!"
+                err: 'The package ' + file.name + ' already exists!'
             });
         }
 
@@ -334,14 +334,26 @@ exports.projectDelete = function (req, res) {
     var file = new fileMgr();
     var delProjectId = req.params.projectId;
 
-    fileMgr.remove({ '$or': { projectId: delProjectId, id: delProjectId }}, function (err) {
-        if (err) {
-            res.json({ err: 'The package ' + delProjectId + " delete failed!" });
+    var idList = [delProjectId];
+
+    fileMgr.find({ projectId: delProjectId}, function (err, files) {
+        if (err === null) {
+            files.forEach(function (file) {
+                idList.push(file.id);
+            });
         }
-        else {
-            res.json({ projectId: delProjectId });
-        }
+
+        fileMgr.remove({ 'id': { '$in': idList } }, function (err) {
+            if (err) {
+                res.json({ err: 'The package ' + delProjectId + ' delete failed!' });
+            }
+            else {
+                res.json({ projectId: delProjectId });
+            }
+        });
     });
+
+
 };
 
 exports.projectFolderGet = function (req, res) {
