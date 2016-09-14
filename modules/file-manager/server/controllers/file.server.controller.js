@@ -450,3 +450,24 @@ exports.projectFolderDelete = function (req, res) {
         }
     });
 };
+
+exports.projectFolderFileUpload = function (req, res) {
+    console.log('Package folder file upload');
+
+    var file = new fileMgr();
+
+};
+
+exports.projectFileUpload = function (req, res) {
+    console.log('Package file upload');
+
+    var file = new fileMgr();
+
+};
+
+exports.projectFileDelete = function (req, res) {
+    console.log('Package file delete');
+
+    var file = new fileMgr();
+
+};

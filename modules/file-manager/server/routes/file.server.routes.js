@@ -72,4 +72,13 @@ module.exports = function (app) {
     app.route('/api/file/projects/:projectId/folder/:folderId')
         .get(file.projectFolderGet)
         .delete(file.projectFolderDelete);
+
+    // File under folder
+    app.route('/api/file/projects/:projectId/parent/:parentId/file')
+        .post(file.projectFolderFileUpload);
+
+    // File under project
+    app.route('/api/file/projects/:projectId/file/:fileId')
+        .post(file.projectFileUpload)
+        .delete(file.projectFileDelete);
 };
