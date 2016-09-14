@@ -441,22 +441,12 @@ exports.projectFolderDelete = function (req, res) {
     var delFolderId = req.params.folderId;
 
     // To delete the files/folders under the folder, but just direct children, not delete the files under child folder
-    var idList = [delProjectId];
-
-    fileMgr.find({ projectId: delProjectId}, function (err, files) {
-        if (err === null) {
-            files.forEach(function (file) {
-                idList.push(file.id);
-            });
+    fileMgr.remove({ projectId: delProjectId, id: delFolderId }, function (err) {
+        if (err) {
+            res.json({err: 'The package ' + delProjectId + ' delete failed!'});
         }
-
-        fileMgr.remove({ 'id': { '$in': idList } }, function (err) {
-            if (err) {
-                res.json({ err: 'The package ' + delProjectId + ' delete failed!' });
-            }
-            else {
-                res.json({ projectId: delProjectId });
-            }
-        });
+        else {
+            res.json({ projectId: delProjectId, id: delFolderId});
+        }
     });
 };
