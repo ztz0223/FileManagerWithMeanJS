@@ -455,14 +455,201 @@ exports.projectFolderDelete = function (req, res) {
 exports.projectFolderFileUpload = function (req, res) {
     console.log('Package folder file upload');
 
-    var file = new fileMgr();
+    console.log(req.file); // Will be null
+    console.log(req.files); // All of the file list will be here, after the multer midware translation
+    console.log(req.body);  // Will be the client's data sent
 
+    var projectId = req.params.projectId;
+    var folderId = req.params.parentId;
+
+    /*
+     *
+     * Files section info:
+     * { fieldname: 'file-0',
+     originalname: 'aa.csv',
+     encoding: '7bit',
+     mimetype: 'application/vnd.ms-excel',
+     destination: './uploads/',
+     filename: '32c62820307b8d83cc59779b9d30aeeb',
+     path: 'uploads\\32c62820307b8d83cc59779b9d30aeeb',
+     size: 808 },
+     * */
+
+    var user = req.body.user || 'None';
+    if (req.files.length !== 1) {
+        res.status(400).send({
+            result: {
+                error: 'No file specified!'
+            }
+        });
+    }
+
+    var savePath = path.join(saveFilePath, user);
+    if (!fs.existsSync(savePath)) {
+        fs.mkdirSync(savePath);
+    }
+
+    var handleFile = function (file) {
+        var errRtn;
+
+        console.log('Original file: ' + file.destination + file.filename);
+        console.log('Dest file: ' + path.join(savePath, file.originalname));
+
+        fs.rename(file.destination + file.filename, path.join(savePath, file.originalname), function (err) {
+            if (err) {
+                console.log(err);
+                errRtn = err;
+            }
+            else {
+                var newfile = new fileMgr();
+                newfile.path = '/';
+                newfile.group = '';
+                newfile.size = file.size;
+                newfile.user = user;
+                newfile.number = 0;
+                newfile.rights = '-rwxr-xr-x';
+                newfile.type = 'file';
+                newfile.name = file.originalname;
+                newfile.date = Date.now();
+                newfile.id = uuid.v4();
+                newfile.projectId = projectId;
+                newfile.folderId = folderId;
+
+                newfile.save(function (err) {
+                    if (err) {
+                        console.log('Mongo save err:' + err);
+                        errRtn = err;
+                    }
+                    else {
+                        console.log('File with user: ' + user + ', name: ' + file.name + ' saved!');
+                    }
+                });
+            }
+        });
+
+        return errRtn;
+    };
+
+    var errRtn;
+    req.files.forEach(function (file) {
+        var rtn = handleFile(file);
+        if(rtn) {
+            errRtn = rtn;
+        }
+    });
+
+    // sleep 3s to send the response, to check the client progress bar status
+    sleep.sleep(3);
+    if (errRtn) {
+        res.status(400).send({
+            result: {
+                error: errRtn
+            }
+        });
+    }
+    else {
+        res.json({ status: 'OK' });
+    }
 };
 
 exports.projectFileUpload = function (req, res) {
     console.log('Package file upload');
 
-    var file = new fileMgr();
+    console.log(req.file); // Will be null
+    console.log(req.files); // All of the file list will be here, after the multer midware translation
+    console.log(req.body);  // Will be the client's data sent
+
+    var projectId = req.params.projectId;
+    var folderId = req.params.projectId;
+
+    /*
+     *
+     * Files section info:
+     * { fieldname: 'file-0',
+     originalname: 'aa.csv',
+     encoding: '7bit',
+     mimetype: 'application/vnd.ms-excel',
+     destination: './uploads/',
+     filename: '32c62820307b8d83cc59779b9d30aeeb',
+     path: 'uploads\\32c62820307b8d83cc59779b9d30aeeb',
+     size: 808 },
+     * */
+
+    var user = req.body.user || 'None';
+    if (req.files.length !== 1) {
+        res.status(400).send({
+            result: {
+                error: 'No file specified!'
+            }
+        });
+    }
+
+    var savePath = path.join(saveFilePath, user);
+    if (!fs.existsSync(savePath)) {
+        fs.mkdirSync(savePath);
+    }
+
+    var handleFile = function (file) {
+        var errRtn;
+
+        console.log('Original file: ' + file.destination + file.filename);
+        console.log('Dest file: ' + path.join(savePath, file.originalname));
+
+        fs.rename(file.destination + file.filename, path.join(savePath, file.originalname), function (err) {
+            if (err) {
+                console.log(err);
+                errRtn = err;
+            }
+            else {
+                var newfile = new fileMgr();
+                newfile.path = '/';
+                newfile.group = '';
+                newfile.size = file.size;
+                newfile.user = user;
+                newfile.number = 0;
+                newfile.rights = '-rwxr-xr-x';
+                newfile.type = 'file';
+                newfile.name = file.originalname;
+                newfile.date = Date.now();
+                newfile.id = uuid.v4();
+                newfile.projectId = projectId;
+                newfile.folderId = folderId;
+
+                newfile.save(function (err) {
+                    if (err) {
+                        console.log('Mongo save err:' + err);
+                        errRtn = err;
+                    }
+                    else {
+                        console.log('File with user: ' + user + ', name: ' + file.name + ' saved!');
+                    }
+                });
+            }
+        });
+
+        return errRtn;
+    };
+
+    var errRtn;
+    req.files.forEach(function (file) {
+        var rtn = handleFile(file);
+        if(rtn) {
+            errRtn = rtn;
+        }
+    });
+
+    // sleep 3s to send the response, to check the client progress bar status
+    sleep.sleep(3);
+    if (errRtn) {
+        res.status(400).send({
+            result: {
+                error: errRtn
+            }
+        });
+    }
+    else {
+        res.json({ status: 'OK' });
+    }
 
 };
 

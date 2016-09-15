@@ -8,7 +8,7 @@
  */
 var file = require('../controllers/file.server.controller');
 var multer1 = require('multer');
-var upload = multer1({ dest: 'uploads/' });
+var upload = multer1({dest: 'uploads/'});
 
 module.exports = function (app) {
     app.route('/api/file/list')
@@ -67,7 +67,7 @@ module.exports = function (app) {
         .post(file.projectPost);
 
     app.route('/api/file/projects/:projectId')
-        .delete (file.projectDelete);
+        .delete(file.projectDelete);
 
     app.route('/api/file/projects/:projectId/parent/:parentId/folder/:folderName')
         .post(file.projectFolderCreate);
@@ -77,11 +77,11 @@ module.exports = function (app) {
         .delete(file.projectFolderDelete);
 
     // File under folder
-    app.route('/api/file/projects/:projectId/parent/:parentId/file')
-        .post(file.projectFolderFileUpload);
+    app.post('/api/file/projects/:projectId/parent/:parentId/file', upload.any(), file.projectFolderFileUpload);
 
     // File under project
     app.route('/api/file/projects/:projectId/file/:fileId')
-        .post(file.projectFileUpload)
         .delete(file.projectFileDelete);
+
+    app.post('/api/file/projects/:projectId/file/:fileId', upload.any(), file.projectFileUpload);
 };
