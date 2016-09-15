@@ -10,6 +10,7 @@ var dateFormat = require('dateformat');
 var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 var uuid = require('node-uuid');
+var sleep = require('sleep');
 
 var saveFilePath = './uploads/';
 
@@ -478,5 +479,6 @@ exports.tokenGet = function (req, res) {
     console.log('Token get');
 
     tokenCount += 1;
+    sleep.sleep(3);
     res.json({key: 'file-manager-token', value: tokenCount});
 };
