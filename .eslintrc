@@ -6,7 +6,7 @@
     no-use-before-define: [1, "nofunc"],
     no-unused-expressions: 0,
     no-empty-class: 0,
-    object-curly-spacing: [2, "always"],
+//    object-curly-spacing: [2, "always"],
     quotes: [1, "single"],
     space-in-parens: [2, "never"]
   },

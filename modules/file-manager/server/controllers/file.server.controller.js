@@ -471,3 +471,12 @@ exports.projectFileDelete = function (req, res) {
     var file = new fileMgr();
 
 };
+
+
+var tokenCount = 1;
+exports.tokenGet = function (req, res) {
+    console.log('Token get');
+
+    tokenCount += 1;
+    res.json({key: 'file-manager-token', value: tokenCount});
+};
