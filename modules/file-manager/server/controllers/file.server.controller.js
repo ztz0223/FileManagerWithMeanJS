@@ -657,7 +657,18 @@ exports.projectFileDelete = function (req, res) {
     console.log('Package file delete');
 
     var file = new fileMgr();
+    var delProjectId = req.params.projectId;
+    var delFileId = req.params.fileId;
 
+    // To delete the files/folders under the folder, but just direct children, not delete the files under child folder
+    fileMgr.remove({ projectId: delProjectId, id: delFileId }, function (err) {
+        if (err) {
+            res.json({err: 'The package ' + delProjectId + ' delete failed!'});
+        }
+        else {
+            res.json({ projectId: delProjectId, id: delFileId});
+        }
+    });
 };
 
 
