@@ -81,7 +81,8 @@ module.exports = function (app) {
 
     // File under project
     app.route('/api/file/projects/:projectId/file/:fileId')
-        .delete(file.projectFileDelete);
+        .delete(file.projectFileDelete)
+        .get(file.projectFileDownload);
 
     app.post('/api/file/projects/:projectId/file/:fileId', upload.any(), file.projectFileUpload);
 };

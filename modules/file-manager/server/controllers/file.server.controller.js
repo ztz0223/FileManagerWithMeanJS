@@ -560,7 +560,7 @@ exports.projectFileUpload = function (req, res) {
     console.log(req.body);  // Will be the client's data sent
 
     var projectId = req.params.projectId;
-    var folderId = req.params.projectId;
+    var fileId = req.params.fileId;
 
     /*
      *
@@ -611,9 +611,9 @@ exports.projectFileUpload = function (req, res) {
                 newfile.type = 'file';
                 newfile.name = file.originalname;
                 newfile.date = Date.now();
-                newfile.id = uuid.v4();
+                newfile.id = fileId;
                 newfile.projectId = projectId;
-                newfile.folderId = folderId;
+                newfile.folderId = projectId;
 
                 newfile.save(function (err) {
                     if (err) {
@@ -667,6 +667,33 @@ exports.projectFileDelete = function (req, res) {
         }
         else {
             res.json({ projectId: delProjectId, id: delFileId});
+        }
+    });
+};
+
+exports.projectFileDownload = function (req, res) {
+    console.log('Package file download');
+
+    var downloadProjectId = req.params.projectId;
+    var downloadFileId = req.params.fileId;
+
+    var user = req.body.user || 'None';
+    var savePath = path.join(saveFilePath, user);
+    if (!fs.existsSync(savePath)) {
+        return res.status(400).send({
+                err: 'File not found!'
+        });
+    }
+
+    fileMgr.find({ projectId: downloadProjectId, id: downloadFileId }, function (err, file) {
+        if (err) {
+            return res.status(400).send({
+                    error: errorHandler.getErrorMessage(err)
+            });
+        }
+        else {
+            var rootPath = path.join(savePath, file[0].name);
+            res.download(rootPath);
         }
     });
 };
