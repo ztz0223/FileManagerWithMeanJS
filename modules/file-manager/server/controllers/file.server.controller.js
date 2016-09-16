@@ -692,8 +692,9 @@ exports.projectFileDownload = function (req, res) {
             });
         }
         else {
-            var rootPath = path.join(savePath, file[0].name);
-            res.download(rootPath);
+            var filePath = path.join(savePath, file[0].name);
+            console.log('Download file: ' + filePath);
+            res.download(filePath);
         }
     });
 };
