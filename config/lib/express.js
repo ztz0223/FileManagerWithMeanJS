@@ -97,7 +97,7 @@ module.exports.initMiddleware = function (app) {
   // Enable the CORS -- Cross-Origin Resource Sharing
   app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authentication');
     res.header('Access-Control-Allow-Methods', 'GET, POST, HEAD, DELETE');
     next();
   });

@@ -60,7 +60,7 @@ module.exports = function (app) {
         .post(file.list);
 
     app.route('/api/file/token')
-        .get(file.tokenGet);
+        .post(file.tokenPost);
 
     app.route('/api/file/projects')
         .get(file.projectGet)

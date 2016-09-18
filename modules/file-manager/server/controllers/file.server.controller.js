@@ -701,20 +701,17 @@ exports.projectFileDownload = function (req, res) {
 
 
 var tokenCount = 1;
-exports.tokenGet = function (req, res) {
+exports.tokenPost = function (req, res) {
     console.log('Token get');
 
     tokenCount += 1;
     sleep.sleep(3);
 
-
     var token = {
-            data: {
-                token_type: 'type1',
-                expires_in: '1900',
-                access_token: uuid.v4(),
-                value: tokenCount
-            }
-        };
+        token_type: 'Bearer',
+        expires_in: '1900',
+        access_token: '6adb615a-3b9c-4e0b-8004-f2af7199642e',
+        value: tokenCount
+    };
     res.json(token);
 };
