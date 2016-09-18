@@ -706,5 +706,15 @@ exports.tokenGet = function (req, res) {
 
     tokenCount += 1;
     sleep.sleep(3);
-    res.json({key: 'file-manager-token', value: tokenCount});
+
+
+    var token = {
+            data: {
+                token_type: 'type1',
+                expires_in: '1900',
+                access_token: uuid.v4(),
+                value: tokenCount
+            }
+        };
+    res.json(token);
 };
