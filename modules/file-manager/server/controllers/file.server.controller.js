@@ -543,7 +543,7 @@ exports.projectFolderFileUpload = function (req, res) {
     });
 
     // sleep 3s to send the response, to check the client progress bar status
-    sleep.sleep(1.5);
+    sleep.sleep(1);
     if (errRtn) {
         res.status(400).send({
             result: {
@@ -643,7 +643,7 @@ exports.projectFileUpload = function (req, res) {
     });
 
     // sleep 3s to send the response, to check the client progress bar status
-    sleep.sleep(3);
+    sleep.sleep(1);
     if (errRtn) {
         res.status(400).send({
             result: {
