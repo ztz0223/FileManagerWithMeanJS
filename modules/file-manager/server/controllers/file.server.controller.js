@@ -491,6 +491,7 @@ exports.projectFolderFileUpload = function (req, res) {
 
     var handleFile = function (file) {
         var errRtn;
+        var fileId;
 
         console.log('Original file: ' + file.destination + file.filename);
         console.log('Dest file: ' + path.join(savePath, file.originalname));
@@ -515,6 +516,8 @@ exports.projectFolderFileUpload = function (req, res) {
                 newfile.projectId = projectId;
                 newfile.folderId = folderId;
 
+                fileId = newfile.id;
+
                 newfile.save(function (err) {
                     if (err) {
                         console.log('Mongo save err:' + err);
@@ -527,19 +530,20 @@ exports.projectFolderFileUpload = function (req, res) {
             }
         });
 
-        return errRtn;
+        return { err: errRtn, fileId: fileId, fileName: req.files[0].originalname };
     };
 
     var errRtn;
+    var rtnObj;
     req.files.forEach(function (file) {
-        var rtn = handleFile(file);
-        if(rtn) {
-            errRtn = rtn;
+        var rtnObj = handleFile(file);
+        if(rtnObj.err) {
+            errRtn = rtnObj.err;
         }
     });
 
     // sleep 3s to send the response, to check the client progress bar status
-    sleep.sleep(3);
+    sleep.sleep(1.5);
     if (errRtn) {
         res.status(400).send({
             result: {
@@ -548,7 +552,7 @@ exports.projectFolderFileUpload = function (req, res) {
         });
     }
     else {
-        res.json({ status: 'OK' });
+        res.json({ status: 'OK', id: rtnObj.id });
     }
 };
 
@@ -648,7 +652,7 @@ exports.projectFileUpload = function (req, res) {
         });
     }
     else {
-        res.json({ status: 'OK' });
+        res.json({ status: 'OK', fileId: fileId, fileName: req.files[0].originalname });
     }
 
 };
@@ -705,7 +709,7 @@ exports.tokenPost = function (req, res) {
     console.log('Token get');
 
     tokenCount += 1;
-    sleep.sleep(3);
+    sleep.sleep(1);
 
     var token = {
         token_type: 'Bearer',
