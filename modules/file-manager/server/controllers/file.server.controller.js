@@ -11,6 +11,7 @@ var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 var uuid = require('node-uuid');
 var sleep = require('sleep');
+var _ = require('lodash');
 
 var saveFilePath = './uploads/';
 
@@ -718,4 +719,36 @@ exports.tokenPost = function (req, res) {
         value: tokenCount
     };
     res.json(token);
+};
+
+var convertList = [];
+exports.convertStatusGet = function (req, res) {
+    console.log('Convert status get');
+
+    var projectId = req.params.projectId;
+    var fileId = req.params.fileId;
+
+    var item = {
+        pId: projectId,
+        fId: fileId,
+        count: 1
+    };
+
+    var index = _.findIndex(convertList, function (listItem) {
+        return item.pId == listItem.pId && item.fId == listItem.fId;
+    });
+
+    if(index === -1) {
+        convertList.push(item);
+        res.json({ status: 'Working' });
+    }
+    else {
+        if(convertList[index].count >= 3) {
+            res.json({ status: 'Finished' });
+        }
+        else {
+            convertList[index].count++;
+            res.json({ status: 'Working' });
+        }
+    }
 };

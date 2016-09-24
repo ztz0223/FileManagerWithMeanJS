@@ -84,5 +84,8 @@ module.exports = function (app) {
         .delete(file.projectFileDelete)
         .get(file.projectFileDownload);
 
+    app.route('/api/file/convert/projects/:projectId/file/:fileId')
+        .get(file.convertStatusGet);
+
     app.post('/api/file/projects/:projectId/file/:fileId', upload.any(), file.projectFileUpload);
 };
