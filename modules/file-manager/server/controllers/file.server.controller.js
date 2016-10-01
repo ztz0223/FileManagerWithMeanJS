@@ -735,7 +735,7 @@ exports.convertStatusGet = function (req, res) {
     };
 
     var index = _.findIndex(convertList, function (listItem) {
-        return item.pId == listItem.pId && item.fId == listItem.fId;
+        return item.pId === listItem.pId && item.fId === listItem.fId;
     });
 
     if(index === -1) {
