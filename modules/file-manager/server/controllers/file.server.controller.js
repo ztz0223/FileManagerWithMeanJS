@@ -10,7 +10,6 @@ var dateFormat = require('dateformat');
 var fs = require('fs');
 var errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 var uuid = require('node-uuid');
-var sleep = require('sleep');
 var _ = require('lodash');
 
 var saveFilePath = './uploads/';
@@ -542,9 +541,7 @@ exports.projectFolderFileUpload = function (req, res) {
             errRtn = rtnObj.err;
         }
     });
-
-    // sleep 3s to send the response, to check the client progress bar status
-    sleep.sleep(1);
+    
     if (errRtn) {
         res.status(400).send({
             result: {
@@ -642,9 +639,7 @@ exports.projectFileUpload = function (req, res) {
             errRtn = rtn;
         }
     });
-
-    // sleep 3s to send the response, to check the client progress bar status
-    sleep.sleep(1);
+    
     if (errRtn) {
         res.status(400).send({
             result: {
@@ -710,7 +705,6 @@ exports.tokenPost = function (req, res) {
     console.log('Token get');
 
     tokenCount += 1;
-    sleep.sleep(1);
 
     var token = {
         token_type: 'Bearer',
